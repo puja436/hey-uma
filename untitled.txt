@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hey UMA</title>
+</head>
+<body>
+  <h1>Hey UMA 🔊</h1>
+  <p>Mic allow karo aur bolo: <strong>"Hey UMA"</strong></p>
+  <button onclick="startListening()">🎙️ Talk to UMA</button>
+  <p id="responseText"></p>
+
+  <script>
+    function startListening() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+          recognition.lang = 'hi-IN';
+          recognition.start();
+
+          recognition.onresult = function(event) {
+            const userSpeech = event.results[0][0].transcript.toLowerCase();
+            document.getElementById("responseText").innerText = "You said: " + userSpeech;
+
+            if (userSpeech.includes("hey uma")) {
+              speak("Ji ha, ma aapka kya madad kar sakta hu.");
+            } else {
+              speak("Mujhe samajh nahi aaya.");
+            }
+          };
+        })
+        .catch(() => {
+          alert("Mic allow nahi hua. Please permission dijiye.");
+        });
+    }
+
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'hi-IN';
+      synth.speak(utter);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
