@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hey UMA</title>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #responseText {
+      margin-top: 40px;
+      font-size: 20px;
+      color: #00e5ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hey UMA 🔊</h1>
+  <p>Mic allow karo aur bolo: <strong>"Hey UMA"</strong></p>
+  <button onclick="startListening()">🎙️ Talk to UMA</button>
+  <p id="responseText"></p>
+
+  <script>
+    function startListening() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert("Speech Recognition is not supported on this device/browser. Please try in Chrome on desktop.");
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'hi-IN';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.start();
+
+        recognition.onresult = function(event) {
+          const userSpeech = event.results[0][0].transcript.toLowerCase();
+          document.getElementById("responseText").innerText = "You said: " + userSpeech;
+
+          if (userSpeech.includes("hey uma")) {
+            speak("Ji ha, ma aapka kya madad kar sakta hu.");
+          } else {
+            speak("Mujhe samajh nahi aaya.");
+          }
+        };
+
+        recognition.onerror = function(event) {
+          console.error("Speech recognition error:", event.error);
+          document.getElementById("responseText").innerText = "Mic ya recognition error: " + event.error;
+        };
+
+      }).catch(() => {
+        alert("Mic access allow nahi hua. Please allow microphone permission.");
+      });
+    }
+
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'hi-IN';
+      synth.speak(utter);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
